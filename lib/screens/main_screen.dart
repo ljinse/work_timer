@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:work_timer/screens/result_screen.dart';
+import 'package:provider/provider.dart';
+import 'package:work_timer/models/work_data.dart';
 
 class MainScreen extends StatelessWidget {
   @override
@@ -46,6 +48,7 @@ class MainScreen extends StatelessWidget {
                   ),
                   onPressed: () {
                     print(1);
+                    Provider.of<WorkData>(context).testData = "main_data";
                     Navigator.push(context, MaterialPageRoute(
                         builder: (context) => ResultScreen()));
                   },

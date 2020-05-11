@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:work_timer/models/work_data.dart';
+import 'package:provider/provider.dart';
 
 class ResultScreen extends StatelessWidget {
   @override
@@ -13,7 +15,7 @@ class ResultScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            Text("result"),
+            Text(Provider.of<WorkData>(context).testData),
           ],
         )
       ),
