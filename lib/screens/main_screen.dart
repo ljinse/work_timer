@@ -3,6 +3,7 @@ import 'package:work_timer/screens/result_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:work_timer/models/work_data.dart';
 import 'dart:async';
+import 'package:work_timer/widgets/work_tile.dart';
 
 class MainScreen extends StatefulWidget {
   @override
@@ -10,7 +11,6 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-
   Stopwatch watch = new Stopwatch();
   Timer timer;
   String elapsedTime = 'START';
@@ -74,7 +74,6 @@ class _MainScreenState extends State<MainScreen> {
     startWatch();
     print("startstop Inside=$is_working");
     elapsedTime = transformMilliSeconds(watch.elapsedMilliseconds, false);
-
   }
 
   String transformMilliSeconds(int milliseconds, bool includeHours) {
@@ -101,7 +100,9 @@ class _MainScreenState extends State<MainScreen> {
         title: Text('WorkTimer'),
       ),
       body: Container(
-        color:  Provider.of<WorkData>(context).workState ? Colors.lightBlueAccent : Colors.grey,
+        color: Provider.of<WorkData>(context).workState
+            ? Colors.lightBlueAccent
+            : Colors.grey,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
@@ -113,7 +114,9 @@ class _MainScreenState extends State<MainScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
                       Icon(
-                        Provider.of<WorkData>(context).workState ? Icons.directions_run : Icons.airline_seat_legroom_extra,
+                        Provider.of<WorkData>(context).workState
+                            ? Icons.directions_run
+                            : Icons.airline_seat_legroom_extra,
                         size: 100.0,
                       ),
                       Text(
@@ -146,9 +149,11 @@ class _MainScreenState extends State<MainScreen> {
                     print(1);
                     Provider.of<WorkData>(context).updateTestData("main_data");
                     Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => ResultScreen()));
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ResultScreen(),
+                      ),
+                    );
                   },
                 ),
               ),
@@ -161,13 +166,17 @@ class _MainScreenState extends State<MainScreen> {
                     Expanded(
                       child: Row(
                         children: <Widget>[
-                          for (int i = 0 ; i < Provider.of<WorkData>(context).count -1 ; i ++)
+                          for (int i = 0;
+                              i < Provider.of<WorkData>(context).count - 1;
+                              i++)
                             Container(
                               child: SizedBox(
                                 height: 10.0,
                                 width: 10.0,
                               ),
-                              color: i % 2 == 0 ? Colors.lightBlueAccent : Colors.grey,
+                              color: i % 2 == 0
+                                  ? Colors.lightBlueAccent
+                                  : Colors.grey,
                             ),
                         ],
                       ),
@@ -176,32 +185,16 @@ class _MainScreenState extends State<MainScreen> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: <Widget>[
-                          Row(
-                            children: <Widget>[
-                              Icon(
-                                Icons.directions_run,
-                                size: 30.0,
-                              ),
-                              Text(
-                                transformMilliSeconds(workTime, true),
-                                style: TextStyle(
-                                  fontSize: 30.0,
-                                ),
-                              ),
-                            ],
+                          WorkTile(
+                            icon: Icons.directions_run,
+                            text: transformMilliSeconds(workTime, true),
+                            size: 30.0,
                           ),
-                          Row(
-                            children: <Widget>[
-                              Icon(Icons.airline_seat_legroom_extra,
-                                  size: 30.0),
-                              Text(
-                                transformMilliSeconds(restTime, true),
-                                style: TextStyle(
-                                  fontSize: 30.0,
-                                ),
-                              ),
-                            ],
-                          )
+                          WorkTile(
+                            icon: Icons.airline_seat_legroom_extra,
+                            text: transformMilliSeconds(restTime, true),
+                            size: 30.0,
+                          ),
                         ],
                       ),
                     )
