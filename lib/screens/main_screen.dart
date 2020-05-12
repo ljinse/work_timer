@@ -137,29 +137,6 @@ class _MainScreenState extends State<MainScreen> {
             ),
             Expanded(
               child: Container(
-                color: Colors.lightBlue,
-                child: FlatButton(
-                  child: Text(
-                    'FINISH',
-                    style: TextStyle(
-                      fontSize: 50.0,
-                    ),
-                  ),
-                  onPressed: () {
-                    print(1);
-                    Provider.of<WorkData>(context).updateTestData("main_data");
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ResultScreen(),
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ),
-            Expanded(
-              child: Container(
                 color: Colors.white,
                 child: Column(
                   children: <Widget>[
@@ -199,6 +176,29 @@ class _MainScreenState extends State<MainScreen> {
                       ),
                     )
                   ],
+                ),
+              ),
+            ),
+            Expanded(
+              child: Container(
+                color: Colors.lightBlue,
+                child: FlatButton(
+                  child: Text(
+                    'FINISH',
+                    style: TextStyle(
+                      fontSize: 50.0,
+                    ),
+                  ),
+                  onPressed: () {
+                    print(1);
+                    handleTap();
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ResultScreen(),
+                      ),
+                    );
+                  },
                 ),
               ),
             ),
