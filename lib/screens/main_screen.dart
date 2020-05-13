@@ -1,79 +1,56 @@
 import 'package:flutter/material.dart';
 import 'package:work_timer/screens/result_screen.dart';
-import 'package:provider/provider.dart';
-import 'package:work_timer/models/work_data.dart';
 import 'dart:async';
 import 'package:work_timer/widgets/work_tile.dart';
+import 'dart:ui';
+
 
 class MainScreen extends StatefulWidget {
+
   @override
   _MainScreenState createState() => _MainScreenState();
 }
 
 class _MainScreenState extends State<MainScreen> {
+
+  double blockWidthForOneMin = window.physicalSize.width / (60 * 60 * 2); // max : 2H
+
+  bool isWorking = false;
+
+  int totalWorkTime = 0;
+  int totalRestTime = 0;
+  List<int> timeList = [];
+
   Stopwatch watch = new Stopwatch();
   Timer timer;
   String elapsedTime = 'START';
-  bool is_working = false;
 
-  int workTime = 0;
-  int restTime = 0;
+  void resetData() {
+    isWorking = false;
+    totalWorkTime = 0;
+    totalRestTime = 0;
+    timeList.clear();
+    elapsedTime = 'START';
 
-  void startWatch() {
-    setState(() {
-      watch.start();
-      timer = Timer.periodic(Duration(milliseconds: 100), updateTime);
-    });
+    watch = new Stopwatch();
+  }
+
+  void resetAndStartWatch() {
+    watch.reset();
+    watch.start();
+    Timer.periodic(Duration(milliseconds: 100), updateTime);
   }
 
   void stopWatch() {
-    setState(() {
-      watch.stop();
-      setTime();
-    });
-  }
-
-  void setTime() {
-    var timeSoFar = watch.elapsedMilliseconds;
-    setState(() {
-      elapsedTime = transformMilliSeconds(timeSoFar, false);
-    });
+    watch.stop();
   }
 
   void updateTime(Timer timer) {
     if (watch.isRunning) {
       setState(() {
-        //print("startstop Inside=$startStop");
         elapsedTime = transformMilliSeconds(watch.elapsedMilliseconds, false);
       });
     }
-  }
-
-  void runTimer(BuildContext context) {
-    Provider.of<WorkData>(context).updateWorkState();
-  }
-
-  void handleTap() {
-    if (watch.isRunning) {
-      stopWatch();
-    }
-
-    // reset
-    setState(() {
-      if (is_working) {
-        workTime += watch.elapsedMilliseconds;
-      } else {
-        restTime += watch.elapsedMilliseconds;
-      }
-      is_working = !is_working;
-    });
-
-    watch.reset();
-
-    //restart
-    startWatch();
-    print("startstop Inside=$is_working");
-    elapsedTime = transformMilliSeconds(watch.elapsedMilliseconds, false);
   }
 
   String transformMilliSeconds(int milliseconds, bool includeHours) {
@@ -93,6 +70,25 @@ class _MainScreenState extends State<MainScreen> {
     return "$minutesStr:$secondsStr";
   }
 
+  void handleTap() {
+    if (watch.isRunning) {
+      stopWatch();
+    }
+
+    // reset
+    setState(() {
+      int time = watch.elapsedMilliseconds;
+      if (isWorking) {
+        totalWorkTime += time;
+      } else {
+        totalRestTime += time;
+      }
+      isWorking = !isWorking;
+      timeList.add(time);
+    });
+    resetAndStartWatch();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -100,7 +96,7 @@ class _MainScreenState extends State<MainScreen> {
         title: Text('WorkTimer'),
       ),
       body: Container(
-        color: Provider.of<WorkData>(context).workState
+        color: isWorking
             ? Colors.lightBlueAccent
             : Colors.grey,
         child: Column(
@@ -114,7 +110,7 @@ class _MainScreenState extends State<MainScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
                       Icon(
-                        Provider.of<WorkData>(context).workState
+                       isWorking
                             ? Icons.directions_run
                             : Icons.airline_seat_legroom_extra,
                         size: 100.0,
@@ -128,10 +124,7 @@ class _MainScreenState extends State<MainScreen> {
                       ),
                     ],
                   ),
-                  onTap: () {
-                    handleTap();
-                    runTimer(context);
-                  },
+                  onTap: handleTap,
                 ),
               ),
             ),
@@ -143,13 +136,11 @@ class _MainScreenState extends State<MainScreen> {
                     Expanded(
                       child: Row(
                         children: <Widget>[
-                          for (int i = 0;
-                              i < Provider.of<WorkData>(context).count - 1;
-                              i++)
+                          for (int i = 0; i < timeList.length ; i++)
                             Container(
                               child: SizedBox(
-                                height: 10.0,
-                                width: 10.0,
+                                height: 20.0,
+                                width: blockWidthForOneMin * timeList[i] / 1000,
                               ),
                               color: i % 2 == 0
                                   ? Colors.lightBlueAccent
@@ -164,12 +155,12 @@ class _MainScreenState extends State<MainScreen> {
                         children: <Widget>[
                           WorkTile(
                             icon: Icons.directions_run,
-                            text: transformMilliSeconds(workTime, true),
+                            text: transformMilliSeconds(totalWorkTime, true),
                             size: 30.0,
                           ),
                           WorkTile(
                             icon: Icons.airline_seat_legroom_extra,
-                            text: transformMilliSeconds(restTime, true),
+                            text: transformMilliSeconds(totalRestTime, true),
                             size: 30.0,
                           ),
                         ],
@@ -190,14 +181,18 @@ class _MainScreenState extends State<MainScreen> {
                     ),
                   ),
                   onPressed: () {
-                    print(1);
-                    handleTap();
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => ResultScreen(),
+                        builder: (context) => ResultScreen(
+                          workTimeStr: transformMilliSeconds(totalWorkTime, true),
+                          restTimeStr: transformMilliSeconds(totalRestTime, true),
+                          totalTimeStr: transformMilliSeconds(totalWorkTime + totalRestTime, true),
+                        ),
                       ),
                     );
+
+                    resetData();
                   },
                 ),
               ),
