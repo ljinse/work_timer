@@ -181,13 +181,19 @@ class _MainScreenState extends State<MainScreen> {
                     ),
                   ),
                   onPressed: () {
+                    handleTap();
+
+                    final workTimeStr = transformMilliSeconds(totalWorkTime, true);
+                    final restTimerStr = transformMilliSeconds(totalRestTime, true);
+                    final totalTimeStr = transformMilliSeconds(totalWorkTime + totalRestTime, true);
+
                     Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (context) => ResultScreen(
-                          workTimeStr: transformMilliSeconds(totalWorkTime, true),
-                          restTimeStr: transformMilliSeconds(totalRestTime, true),
-                          totalTimeStr: transformMilliSeconds(totalWorkTime + totalRestTime, true),
+                          workTimeStr: workTimeStr,
+                          restTimeStr: restTimerStr,
+                          totalTimeStr: totalTimeStr,
                         ),
                       ),
                     );
