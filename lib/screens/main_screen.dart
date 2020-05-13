@@ -3,7 +3,7 @@ import 'package:work_timer/screens/result_screen.dart';
 import 'dart:async';
 import 'package:work_timer/widgets/work_tile.dart';
 import 'dart:ui';
-
+import 'package:work_timer/constants.dart';
 
 class MainScreen extends StatefulWidget {
 
@@ -71,21 +71,21 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   void handleTap() {
+    isWorking = !isWorking;
+
     if (watch.isRunning) {
       stopWatch();
+      setState(() {
+        int time = watch.elapsedMilliseconds;
+        if (isWorking) {
+          totalWorkTime += time;
+        } else {
+          totalRestTime += time;
+        }
+        timeList.add(time);
+      });
     }
 
-    // reset
-    setState(() {
-      int time = watch.elapsedMilliseconds;
-      if (isWorking) {
-        totalWorkTime += time;
-      } else {
-        totalRestTime += time;
-      }
-      isWorking = !isWorking;
-      timeList.add(time);
-    });
     resetAndStartWatch();
   }
 
@@ -97,8 +97,8 @@ class _MainScreenState extends State<MainScreen> {
       ),
       body: Container(
         color: isWorking
-            ? Colors.lightBlueAccent
-            : Colors.grey,
+            ? kWorkBackgroundColor
+            : kRestBackgroundColor,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
@@ -128,6 +128,7 @@ class _MainScreenState extends State<MainScreen> {
                 ),
               ),
             ),
+
             Expanded(
               child: Container(
                 color: Colors.white,
@@ -143,12 +144,13 @@ class _MainScreenState extends State<MainScreen> {
                                 width: blockWidthForOneMin * timeList[i] / 1000,
                               ),
                               color: i % 2 == 0
-                                  ? Colors.lightBlueAccent
-                                  : Colors.grey,
+                                  ? kWorkBackgroundColor
+                                  : kRestBackgroundColor,
                             ),
                         ],
                       ),
                     ),
+                    Divider(color: Colors.grey, thickness: 1.0,),
                     Expanded(
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -158,6 +160,7 @@ class _MainScreenState extends State<MainScreen> {
                             text: transformMilliSeconds(totalWorkTime, true),
                             size: 30.0,
                           ),
+                          VerticalDivider(color: Colors.grey, thickness: 1.0,),
                           WorkTile(
                             icon: Icons.airline_seat_legroom_extra,
                             text: transformMilliSeconds(totalRestTime, true),
