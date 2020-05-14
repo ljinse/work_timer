@@ -6,14 +6,13 @@ import 'dart:ui';
 import 'package:work_timer/constants.dart';
 
 class MainScreen extends StatefulWidget {
-
   @override
   _MainScreenState createState() => _MainScreenState();
 }
 
 class _MainScreenState extends State<MainScreen> {
-
-  double blockWidthForOneMin = window.physicalSize.width / (60 * 60 * 2); // max : 2H
+  double blockWidthForOneMin =
+      window.physicalSize.width / (60 * 60 * 2); // max : 2H
 
   bool isWorking = false;
 
@@ -71,8 +70,6 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   void handleTap() {
-    isWorking = !isWorking;
-
     if (watch.isRunning) {
       stopWatch();
       setState(() {
@@ -86,6 +83,8 @@ class _MainScreenState extends State<MainScreen> {
       });
     }
 
+    isWorking = !isWorking;
+
     resetAndStartWatch();
   }
 
@@ -96,9 +95,7 @@ class _MainScreenState extends State<MainScreen> {
         title: Text('WorkTimer'),
       ),
       body: Container(
-        color: isWorking
-            ? kWorkBackgroundColor
-            : kRestBackgroundColor,
+        color: isWorking ? kWorkBackgroundColor : kRestBackgroundColor,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
@@ -106,20 +103,57 @@ class _MainScreenState extends State<MainScreen> {
               flex: 5,
               child: Container(
                 child: GestureDetector(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                  child: Stack(
+                    alignment: Alignment.topRight,
                     children: <Widget>[
-                      Icon(
-                       isWorking
-                            ? Icons.directions_run
-                            : Icons.airline_seat_legroom_extra,
-                        size: 100.0,
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Icon(
+                            isWorking
+                                ? Icons.directions_run
+                                : Icons.airline_seat_legroom_extra,
+                            size: 100.0,
+                          ),
+                          Text(
+                            elapsedTime,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 100.0,
+                              fontWeight: FontWeight.w900,
+                            ),
+                          ),
+                        ],
                       ),
-                      Text(
-                        elapsedTime,
-                        style: TextStyle(
-                          fontSize: 100.0,
-                          fontWeight: FontWeight.w900,
+                      Padding(
+                        padding: const EdgeInsets.all(20.0),
+                        child: Visibility(
+                          visible: isWorking,
+                          child: CircleAvatar(
+                            radius: 40.0,
+                            backgroundColor: Colors.white,
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.baseline,
+                              textBaseline: TextBaseline.alphabetic,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                Text(
+                                  (timeList.length / 2 + 1).toInt().toString(),
+                                  style: TextStyle(
+                                    fontSize: 30.0,
+                                  ),
+                                ),
+                                Text(
+                                  'SET',
+                                  style: TextStyle(
+                                    fontSize: 15.0,
+                                    textBaseline: TextBaseline.alphabetic,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
                       ),
                     ],
@@ -128,7 +162,6 @@ class _MainScreenState extends State<MainScreen> {
                 ),
               ),
             ),
-
             Expanded(
               child: Container(
                 color: Colors.white,
@@ -137,7 +170,7 @@ class _MainScreenState extends State<MainScreen> {
                     Expanded(
                       child: Row(
                         children: <Widget>[
-                          for (int i = 0; i < timeList.length ; i++)
+                          for (int i = 0; i < timeList.length; i++)
                             Container(
                               child: SizedBox(
                                 height: 20.0,
@@ -150,7 +183,10 @@ class _MainScreenState extends State<MainScreen> {
                         ],
                       ),
                     ),
-                    Divider(color: Colors.grey, thickness: 1.0,),
+                    Divider(
+                      color: Colors.grey,
+                      thickness: 1.0,
+                    ),
                     Expanded(
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -160,7 +196,10 @@ class _MainScreenState extends State<MainScreen> {
                             text: transformMilliSeconds(totalWorkTime, true),
                             size: 30.0,
                           ),
-                          VerticalDivider(color: Colors.grey, thickness: 1.0,),
+                          VerticalDivider(
+                            color: Colors.grey,
+                            thickness: 1.0,
+                          ),
                           WorkTile(
                             icon: Icons.airline_seat_legroom_extra,
                             text: transformMilliSeconds(totalRestTime, true),
@@ -186,9 +225,12 @@ class _MainScreenState extends State<MainScreen> {
                   onPressed: () {
                     handleTap();
 
-                    final workTimeStr = transformMilliSeconds(totalWorkTime, true);
-                    final restTimerStr = transformMilliSeconds(totalRestTime, true);
-                    final totalTimeStr = transformMilliSeconds(totalWorkTime + totalRestTime, true);
+                    final workTimeStr =
+                        transformMilliSeconds(totalWorkTime, true);
+                    final restTimerStr =
+                        transformMilliSeconds(totalRestTime, true);
+                    final totalTimeStr = transformMilliSeconds(
+                        totalWorkTime + totalRestTime, true);
 
                     Navigator.push(
                       context,
